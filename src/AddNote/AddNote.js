@@ -29,13 +29,12 @@ class AddNote extends React.Component {
     }
 
     handleDropdownClick(folderId) { 
-        this.setState({folderId: folderId});
+        this.setState({folderid: folderId});
     }
 
     handleSubmit(event) {
         event.preventDefault();
         const {name, folderId, content} = this.state;
-        // const folderIdInt = parseInt(folderId); No need to convert to a number
 
         let options = {
             method: 'POST', 
@@ -48,7 +47,7 @@ class AddNote extends React.Component {
             }),
             headers: { 'Content-Type': 'application/json'}
         }
-        fetch(`${config.API_ENDPOINT}/notes`, options) 
+        fetch(`${config.API_ENDPOINT}/note`, options) 
             .then(res => res.json())
             .then((result) => {
 
@@ -56,7 +55,7 @@ class AddNote extends React.Component {
             //Also added addNote from context
 
             // this.props.routeProps.history.push('/')
-            this.context.addNote(result)
+            this.context.addNote({name: name.value, folderid: folderId, content})
             this.props.history.push('/')
             })
     }
@@ -83,25 +82,16 @@ class AddNote extends React.Component {
             return <option key={item.id} value={item.id}>{item.name}</option>
         })
         
-        /**
-         * Made several changes here. Your validation was triggering 
-         * even if data was entered into the field.
-         * HTML has built in validation and its easy to use. 
-         * I just added required to the fields that needed it. 
-         * For the dropdown I removed the extra option you had.
-         * This was a folder is always selected
-         */
     
 
         return (
             <form className="addnote" onSubmit={e => this.handleSubmit(e)}>
                 <h2>Add Note</h2>
-                {/* <div className="addnote__hint">* required field</div>   */}
+                <div className="addnote__hint">* required field</div>
                 <div className="form-group">
                     <label htmlFor="name">Name{' '}
                     <input type="text" className="name__control" required
                         name="name" id="name" onChange={e => this.updateName(e.target.value)}/>
-                    {/* {this.state.name.touched && <ValidationError message={'There was an error'} />} */}
                     </label><br />
 
                     <label htmlFor="content">Add Text{' '}
