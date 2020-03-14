@@ -1,34 +1,38 @@
 import React from 'react';
 import config from '../config';
-import PropTypes from 'prop-types';
-import ApiContext from '../ApiContext';
 
-
+//Imported Apicontext
+import ApiContext from '../ApiContext'
 
 
 class AddFolder extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-          name: {
+    /**
+     * Just so you know there is an easier way to set up props and state
+     * the constructor is not needed anymore but you can still use it if you want to
+     */
+    
+     //NEW WAY OF USING STATE. PROPS ARE AUTOMATICALLY IMPORTED
+    state = {
+        name: {
             value: '',
             touched: false
-          }
         }
-    } 
-
-    static defaultProps = {
-        history: {
-          push: () => { }
-        },
     }
 
-    static contextType = ApiContext
-    addFolder = (folder) => {
-        this.setState({
-            folders: [...this.state.folders, folder]
-        })
-    }
+    // OLD WAY OF SETTING UP PROPS AND STATE
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {
+    //       name: {
+    //         value: '',
+    //         touched: false
+    //       }
+    //     }
+    // } 
+
+
+    //Initialized ApiContext
+    static contextType = ApiContext;
 
     updateName(name) {
         this.setState({name: {value: name, touched: true}});
@@ -44,15 +48,18 @@ class AddFolder extends React.Component {
             body: JSON.stringify({name: name.value }),
             headers: { 'Content-Type': 'application/json'}
         }
-        fetch(`${config.API_ENDPOINT}/folder`, options) 
-            .then(res => {
-                if (!res.ok)
-                    return res.json().then(e => Promise.reject(e))
-                return res.json()
-            })
-            .then(folder => {
-                this.context.addFolder(folder)
-                this.props.history.push(`/folder/${folder.id}`)
+        fetch(`${config.API_ENDPOINT}/folders`, options) 
+            .then(res => res.json())
+            .then(() => {
+
+            /**
+             * You can't just pass in name. You have to pass in and object
+             * with name: value
+             */
+            // this.context.addFolder(name)
+
+            this.context.addFolder({name: name.value})
+            this.props.history.push('/')
             })
         
     }
@@ -92,10 +99,5 @@ class AddFolder extends React.Component {
     }
 }
 
-AddFolder.propTypes = {
-    name: PropTypes.string.isRequired,
-    value: PropTypes.string,
-    touched: PropTypes.boolean
-};
 
 export default AddFolder;

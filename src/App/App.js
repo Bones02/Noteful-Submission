@@ -43,14 +43,15 @@ class App extends Component {
             notes: this.state.notes.filter(note => note.id !== noteId)
         });
     };
+    
 
     addNote = note => {
         this.setState({
             notes: [...this.state.notes, note]
-        })
+        },()=> console.log(this.state.notes))
     }
 
-    addFolder = (folder) => {
+    addFolder = folder => {
         this.setState({
             folders: [...this.state.folders, folder]
         })
@@ -69,10 +70,14 @@ class App extends Component {
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageNav}  />
-                <Route path="/add-folder" render={(props) => {
-                    return (<AddFolder folders={this.state.folders} routeProps={props} />)}} />
-                <Route path="/add-note" render={(props) => { 
-                    return ( <AddNote folders={this.state.folders} routeProps={props}/> )}}  />
+                
+                {/* 
+                    Change render props so that props are sent directly
+                */}
+                <Route path="/add-folder" render={(props) => 
+                    <AddFolder folders={this.state.folders} {...props} />} />
+                <Route path="/add-note" render={(props) =>  
+                    <AddNote folders={this.state.folders} {...props}/> }  />
             </>
         );
     }
@@ -98,6 +103,8 @@ class App extends Component {
             notes: this.state.notes,
             folders: this.state.folders,
             deleteNote: this.handleDeleteNote,
+            // addNote: this.handleAddNote,
+            // addFolder: this.handleAddFolder,
             addNote: this.addNote,
             addFolder: this.addFolder
         };

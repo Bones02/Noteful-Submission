@@ -18,20 +18,7 @@ class AddNote extends React.Component {
           folderId: ''
         }
     } 
-
-    static defaultProps = {
-        history: {
-          push: () => { }
-        },
-    }
-
     static contextType = ApiContext
-
-    addNote = note => {
-        this.setState({
-            notes: [...this.state.notes, note]
-        })
-    }
 
     updateName(name) {
         this.setState({name: {value: name, touched: true}});
@@ -48,25 +35,29 @@ class AddNote extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         const {name, folderId, content} = this.state;
-    
-        console.log('handle submit variables name', name );
-        console.log('handle submit variables folderId', folderId ); 
-        console.log('handle submit variables content', content );
+        // const folderIdInt = parseInt(folderId); No need to convert to a number
 
         let options = {
             method: 'POST', 
-            body: JSON.stringify({name: name.value, folderid: folderId, content}),
+            // You were missing modified for the date. I added it.
+            body: JSON.stringify({
+                name: name.value, 
+                folderId, 
+                content,
+                modified: new Date()
+            }),
             headers: { 'Content-Type': 'application/json'}
         }
-        fetch(`${config.API_ENDPOINT}/note`, options) 
-            .then(res => {
-                if (!res.ok)
-                return res.json().then(e => Promise.reject(e))
-                return res.json()
-            })
-            .then(note => {
-                this.context.addNote(note)
-                this.props.history.push(`/folder/${note.folderId}`)
+        fetch(`${config.API_ENDPOINT}/notes`, options) 
+            .then(res => res.json())
+            .then((result) => {
+
+            //Changed the history to just use regular props
+            //Also added addNote from context
+
+            // this.props.routeProps.history.push('/')
+            this.context.addNote(result)
+            this.props.history.push('/')
             })
     }
 
@@ -88,33 +79,41 @@ class AddNote extends React.Component {
 
     render() { 
         const {folders} = this.props
-        const dropdownItems = folders.map(item => { 
+        const dropdownItems = folders.map((item, index) => { 
             return <option key={item.id} value={item.id}>{item.name}</option>
         })
         
-
+        /**
+         * Made several changes here. Your validation was triggering 
+         * even if data was entered into the field.
+         * HTML has built in validation and its easy to use. 
+         * I just added required to the fields that needed it. 
+         * For the dropdown I removed the extra option you had.
+         * This was a folder is always selected
+         */
     
 
         return (
             <form className="addnote" onSubmit={e => this.handleSubmit(e)}>
                 <h2>Add Note</h2>
-                <div className="addnote__hint">* required field</div>  
+                {/* <div className="addnote__hint">* required field</div>   */}
                 <div className="form-group">
-                    <label htmlFor="name">Name *</label>
-                    <input type="text" className="name__control"
+                    <label htmlFor="name">Name{' '}
+                    <input type="text" className="name__control" required
                         name="name" id="name" onChange={e => this.updateName(e.target.value)}/>
-                    {this.state.name.touched && <ValidationError message={'There was an error'} />}
+                    {/* {this.state.name.touched && <ValidationError message={'There was an error'} />} */}
+                    </label><br />
 
-                    <label htmlFor="content">Add Text *</label>
-                    <input type="text" className="name__control"
+                    <label htmlFor="content">Add Text{' '}
+                    <input type="text" className="name__control" required
                         name="content" id="content" onChange={e => this.updateContent(e.target.value)}/>
+                    </label><br />
 
-                    <label htmlFor="folder">Select Folder *</label>
+                    <label htmlFor="folder">Select Folder{' '}
                     <select onChange={e => this.handleDropdownClick(e.target.value)}>
-                        <option/>
                         {dropdownItems} 
                     </select>
-    
+                    </label>
                 </div>
     
                 <div className="addfolder__button__group">
