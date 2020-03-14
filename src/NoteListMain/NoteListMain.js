@@ -15,6 +15,10 @@ export default class NoteListMain extends React.Component {
   }
   static contextType = ApiContext
 
+  handleDeleteNote = () => {
+    this.props.history.push('/')
+  };
+  
   render() {
     const { notes=[] } = this.context
     const folderId = this.props.match.params.folderId

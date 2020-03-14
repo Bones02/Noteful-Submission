@@ -103,8 +103,6 @@ class App extends Component {
             notes: this.state.notes,
             folders: this.state.folders,
             deleteNote: this.handleDeleteNote,
-            // addNote: this.handleAddNote,
-            // addFolder: this.handleAddFolder,
             addNote: this.addNote,
             addFolder: this.addFolder
         };

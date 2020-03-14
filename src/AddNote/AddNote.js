@@ -29,34 +29,40 @@ class AddNote extends React.Component {
     }
 
     handleDropdownClick(folderId) { 
-        this.setState({folderid: folderId});
+        console.log(folderId)
+        this.setState({folderId: folderId});
     }
 
     handleSubmit(event) {
         event.preventDefault();
         const {name, folderId, content} = this.state;
 
+        console.log('handle submit variables name', name );
+        console.log('handle submit variables folderId', folderId ); 
+        console.log('handle submit variables content', content );
+    
         let options = {
             method: 'POST', 
             // You were missing modified for the date. I added it.
             body: JSON.stringify({
-                name: name.value, 
-                folderId, 
-                content,
-                modified: new Date()
+                name: name.value, folderid: folderId, content,
             }),
             headers: { 'Content-Type': 'application/json'}
         }
         fetch(`${config.API_ENDPOINT}/note`, options) 
-            .then(res => res.json())
-            .then((result) => {
+            .then(res => {
+                if (!res.ok)
+                return res.json().then(e => Promise.reject(e))
+                return res.json()
+            })
+            .then((note) => {  
 
             //Changed the history to just use regular props
             //Also added addNote from context
 
             // this.props.routeProps.history.push('/')
-            this.context.addNote({name: name.value, folderid: folderId, content})
-            this.props.history.push('/')
+            this.context.addNote(note)
+            this.props.history.push(`/folder/${note.folderid}`)
             })
     }
 
@@ -78,7 +84,7 @@ class AddNote extends React.Component {
 
     render() { 
         const {folders} = this.props
-        const dropdownItems = folders.map((item, index) => { 
+        const dropdownItems = folders.map(item => { 
             return <option key={item.id} value={item.id}>{item.name}</option>
         })
         
@@ -101,6 +107,7 @@ class AddNote extends React.Component {
 
                     <label htmlFor="folder">Select Folder{' '}
                     <select onChange={e => this.handleDropdownClick(e.target.value)}>
+                        <option/>
                         {dropdownItems} 
                     </select>
                     </label>
