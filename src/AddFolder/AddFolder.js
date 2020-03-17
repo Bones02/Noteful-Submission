@@ -21,8 +21,8 @@ class AddFolder extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        const {name} = this.state;
-        const {folderid} = parseInt(this.state)
+        const {name,folderid} = this.state;
+        
     
         console.log(name);
         let options = {
@@ -32,8 +32,12 @@ class AddFolder extends React.Component {
         }
         fetch(`${config.API_ENDPOINT}/folder`, options) 
             .then(res => res.json())
-            .then(() => {
-                this.context.addFolder({name: name.value})
+            // .then(() => {
+            //     this.context.addFolder({name: name.value})
+            //     this.props.history.push(`/folder/${folderid}`)
+            // })
+            .then((respJson) => {
+                this.context.addFolder({name: respJson.name, id: respJson.id})
                 this.props.history.push(`/folder/${folderid}`)
             })
         
