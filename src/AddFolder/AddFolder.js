@@ -6,12 +6,6 @@ import ApiContext from '../ApiContext'
 
 
 class AddFolder extends React.Component {
-    /**
-     * Just so you know there is an easier way to set up props and state
-     * the constructor is not needed anymore but you can still use it if you want to
-     */
-    
-     //NEW WAY OF USING STATE. PROPS ARE AUTOMATICALLY IMPORTED
     state = {
         name: {
             value: '',
@@ -19,19 +13,6 @@ class AddFolder extends React.Component {
         }
     }
 
-    // OLD WAY OF SETTING UP PROPS AND STATE
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //       name: {
-    //         value: '',
-    //         touched: false
-    //       }
-    //     }
-    // } 
-
-
-    //Initialized ApiContext
     static contextType = ApiContext;
 
     updateName(name) {
@@ -41,6 +22,7 @@ class AddFolder extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         const {name} = this.state;
+        const {folderid} = parseInt(this.state)
     
         console.log(name);
         let options = {
@@ -51,15 +33,8 @@ class AddFolder extends React.Component {
         fetch(`${config.API_ENDPOINT}/folder`, options) 
             .then(res => res.json())
             .then(() => {
-
-            /**
-             * You can't just pass in name. You have to pass in and object
-             * with name: value
-             */
-            // this.context.addFolder(name)
-
-            this.context.addFolder({name: name.value})
-            this.props.history.push('/')
+                this.context.addFolder({name: name.value})
+                this.props.history.push(`/folder/${folderid}`)
             })
         
     }

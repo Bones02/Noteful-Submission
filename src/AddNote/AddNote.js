@@ -36,14 +36,13 @@ class AddNote extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         const {name, folderId, content} = this.state;
-
+        
         console.log('handle submit variables name', name );
         console.log('handle submit variables folderId', folderId ); 
         console.log('handle submit variables content', content );
     
         let options = {
             method: 'POST', 
-            // You were missing modified for the date. I added it.
             body: JSON.stringify({
                 name: name.value, folderid: folderId, content,
             }),
@@ -57,10 +56,6 @@ class AddNote extends React.Component {
             })
             .then((note) => {  
 
-            //Changed the history to just use regular props
-            //Also added addNote from context
-
-            // this.props.routeProps.history.push('/')
             this.context.addNote(note)
             this.props.history.push(`/folder/${note.folderid}`)
             })
